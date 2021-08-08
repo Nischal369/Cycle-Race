@@ -1,6 +1,6 @@
 var path,mainCyclist;
 var player1,player2,player3;
-var pathImg,mainRacerImg1,mainRacerImg2;
+var pathImg,mainPlayerImg1,mainPlayerImg2;
 
 var oppPink1Img,oppPink2Img;
 var oppYellow1Img,oppYellow2Img;
@@ -17,21 +17,21 @@ var distance=0;
 var gameOver, restart;
 
 function preload(){
-  pathImg = loadImage("images/Road.png");
-  mainRacerImg1 = loadAnimation("images/mainPlayer1.png","images/mainPlayer2.png");
-  mainRacerImg2= loadAnimation("images/mainPlayer3.png");
+  pathImg = loadImage("Road.png");
+  mainPlayerImg1 = loadAnimation("mainPlayer1.png","mainPlayer2.png");
+  mainPlayerImg2= loadAnimation("mainPlayer3.png");
   
-  oppPink1Img = loadAnimation("images/opponent1.png","images/opponent2.png");
-  oppPink2Img = loadAnimation("images/opponent3.png");
+  oppPink1Img = loadAnimation("opponent1.png","opponent2.png");
+  oppPink2Img = loadAnimation("opponent3.png");
   
-  oppYellow1Img = loadAnimation("images/opponent4.png","images/opponent5.png");
-  oppYellow2Img = loadAnimation("images/opponent6.png");
+  oppYellow1Img = loadAnimation("opponent4.png","opponent5.png");
+  oppYellow2Img = loadAnimation("opponent6.png");
   
-  oppRed1Img = loadAnimation("images/opponent7.png","images/opponent8.png");
-  oppRed2Img = loadAnimation("images/opponent9.png");
+  oppRed1Img = loadAnimation("opponent7.png","opponent8.png");
+  oppRed2Img = loadAnimation("opponent9.png");
   
-  cycleBell = loadSound("sound/bell.mp3");
-  gameOverImg = loadImage("images/gameOver.png");
+  cycleBell = loadSound("bell.mp3");
+  gameOverImg = loadImage("gameOver.png");
 }
 
 function setup(){
@@ -44,13 +44,14 @@ path.velocityX = -5;
 
 //creating boy running
 mainCyclist  = createSprite(70,150);
-mainCyclist.addAnimation("SahilRunning",mainRacerImg1);
+mainCyclist.addAnimation("Running",mainPlayerImg1);
 mainCyclist.scale=0.07;
   
-//set collider for mainCyclist
+mainCyclist.setCollider("circle",0,0,500);
+//mainCyclist.debug=true;
 
   
-gameOver = createSprite(650,150);
+gameOver = createSprite(350,150);
 gameOver.addImage(gameOverImg);
 gameOver.scale = 0.8;
 gameOver.visible = false;  
@@ -67,11 +68,11 @@ function draw() {
   drawSprites();
   textSize(20);
   fill(255);
-  text("Distance: "+ distance,900,30);
+  text("Distance: "+ distance,500,30);
   
   if(gameState===PLAY){
     
-   distance = distance + Math.round(getFrameRate()/50);
+   distance = distance + Math.round(getFrameRate()/60);
    path.velocityX = -(6 + 2*distance/150);
   
    mainCyclist.y = World.mouseY;
@@ -122,12 +123,14 @@ function draw() {
     
 }else if (gameState === END) {
     gameOver.visible = true;
-    //Add code to show restart game instrution in text here
+    textSize(20);
+    fill(255);
+    text("Press Enter key to Restart the game!", 200,200);
   
   
     path.velocityX = 0;
     mainCyclist.velocityY = 0;
-    mainCyclist.addAnimation("SahilRunning",mainRacerImg2);
+    mainCyclist.addAnimation("SahilRunning",mainPlayerImg2);
   
     pinkCG.setVelocityXEach(0);
     pinkCG.setLifetimeEach(-1);
@@ -138,7 +141,10 @@ function draw() {
     redCG.setVelocityXEach(0);
     redCG.setLifetimeEach(-1);
 
-    //write condition for calling reset( )
+     
+     if(keyDown("ENTER")) {
+      reset();
+    }
 }
 }
 
@@ -169,10 +175,14 @@ function redCyclists(){
         redCG.add(player3);
 }
 
-//create reset function here
-
-
-
-
-
-
+function reset(){
+  gameState = PLAY;
+  gameOver.visible = false;
+  mainCyclist.addAnimation("SahilRunning",mainPlayerImg1);
+  
+  pinkCG.destroyEach();
+  yellowCG.destroyEach();
+  redCG.destroyEach();
+  
+  distance = 0;
+}
